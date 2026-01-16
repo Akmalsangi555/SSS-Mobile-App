@@ -5,6 +5,7 @@ class UserProfileController extends GetxController {
   final Rxn<LoginUserModel> _userData = Rxn<LoginUserModel>();
 
   LoginUserModel? get userData => _userData.value;
+  Rxn<LoginUserModel> get rxUserData => _userData;
 
   void setUserData(LoginUserModel userData) {
     _userData.value = userData;

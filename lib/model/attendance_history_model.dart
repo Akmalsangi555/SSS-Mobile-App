@@ -90,7 +90,7 @@ class AttendanceDetail {
   int shiftTypeId;
   String locationIp;
   String checkInTime;
-  String checkOutTime;
+  String? checkOutTime;
   num hoursWorked;
   String latitude;
   String longitude;
@@ -160,7 +160,7 @@ class AttendanceDetail {
         shiftTypeId: json["ShiftType_ID"],
         locationIp: json["LocationIP"],
         checkInTime: json["CheckInTime"],
-        checkOutTime: json["CheckOutTime"],
+        checkOutTime: json["CheckOutTime"]?.toString(),
         hoursWorked: json["HoursWorked"],
         latitude: json["Latitude"],
         longitude: json["Longitude"],

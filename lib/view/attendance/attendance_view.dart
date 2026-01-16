@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:get/get.dart';
-import 'package:sssmobileapp/api_function.dart';
 import 'package:sssmobileapp/component/ClockInOutDialog.dart';
 import 'package:sssmobileapp/config/style.dart';
-import 'package:sssmobileapp/model/attendance_history_model.dart';
-import 'package:sssmobileapp/model/auth_models/login_user_model.dart';
-import 'package:sssmobileapp/controller/user_profile_controller.dart';
 import 'package:sssmobileapp/widgets/filled_button.dart';
 import 'package:sssmobileapp/widgets/ssappbar.dart';
 import 'package:sssmobileapp/widgets/s_scaffold.dart';
+import 'package:sssmobileapp/view_model/attendance_controller.dart';
 
 class AttendanceView extends StatefulWidget {
   const AttendanceView({super.key});
@@ -19,6 +16,8 @@ class AttendanceView extends StatefulWidget {
 }
 
 class _AttendanceViewState extends State<AttendanceView> {
+  late final AttendanceController controller = Get.put(AttendanceController());
+
   void showClockDialog(BuildContext context, bool isClockIn) {
     showDialog(
       context: context,
@@ -28,34 +27,10 @@ class _AttendanceViewState extends State<AttendanceView> {
     );
   }
 
-  List<AttendanceHistoryModel> attendanceHistory = [];
-  bool loadData = true;
-  getData() async {
-    LoginUserModel userData = Get.find<UserProfileController>().userData!;
-    print(
-        'MyAttendanceHistory/Details?OrganizationId=${userData.organizationId}&BranchId=${userData.branchId}&UsersProfileId=${userData.usersProfileId}');
-
-    var res = await ApiService.get(
-        'MyAttendanceHistory/Details?OrganizationId=${userData.organizationId}&BranchId=${userData.branchId}&UsersProfileId=${userData.usersProfileId}');
-
-    if (res.statusCode == 200 && res.data['IsSuccess']) {
-      var data = res.data['Content'] as List;
-      attendanceHistory =
-          data.map((e) => AttendanceHistoryModel.fromJson(e)).toList();
-      // setState(() {});
-    } else {
-      ApiService.showDialogOnApi(context, res.data['Message']);
-    }
-    setState(() {
-      loadData = false;
-    });
-  }
-
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    getData();
+    controller.loadAttendanceHistory();
   }
 
   @override
@@ -255,14 +230,18 @@ class _AttendanceViewState extends State<AttendanceView> {
                       SizedBox(
                         height: 16,
                       ),
-                      loadData
+                      Obx(() => controller.isLoading.value
                           ? Center(
-                              child: CircularProgressIndicator(),
-                            )
-                          : attendanceHistory.isEmpty
-                              ? Center(child: CircularProgressIndicator())
+                              child: CircularProgressIndicator(
+                              color: AppTheme.backgroundColor,
+                            ))
+                          : controller.attendanceHistory.isEmpty
+                              ? Center(
+                                  child: CircularProgressIndicator(
+                                  color: AppTheme.backgroundColor,
+                                ))
                               : Column(
-                                  children: attendanceHistory
+                                  children: controller.attendanceHistory
                                       .map((e) => Container(
                                             margin: EdgeInsets.only(bottom: 16),
                                             padding: EdgeInsets.all(16),
@@ -316,7 +295,7 @@ class _AttendanceViewState extends State<AttendanceView> {
                                                             .start,
                                                     children: [
                                                       Text(
-                                                        '${e.attendanceDetails.first.checkInTime.split(' ').last} - ${e.attendanceDetails.first.checkOutTime.split(' ').last}',
+                                                        '${e.attendanceDetails.first.checkInTime.split(' ').last} - ${(e.attendanceDetails.first.checkOutTime == null || e.attendanceDetails.first.checkOutTime!.isEmpty) ? 'N/A' : e.attendanceDetails.first.checkOutTime!.split(' ').last}',
                                                         style: Theme.of(context)
                                                             .textTheme
                                                             .bodySmall,
@@ -357,7 +336,7 @@ class _AttendanceViewState extends State<AttendanceView> {
                                                           fontSize: 10),
                                                     ),
                                                     Text(
-                                                      'Clocked Out: ${e.attendanceDetails.first.checkOutTime.split(' ').last}',
+                                                      'Clocked Out: ${(e.attendanceDetails.first.checkOutTime == null || e.attendanceDetails.first.checkOutTime!.isEmpty) ? 'N/A' : e.attendanceDetails.first.checkOutTime!.split(' ').last}',
                                                       style: TextStyle(
                                                           color: AppTheme
                                                               .secondaryColor,
@@ -377,7 +356,7 @@ class _AttendanceViewState extends State<AttendanceView> {
                                               ],
                                             ),
                                           ))
-                                      .toList())
+                                      .toList()))
                     ]))));
   }
 }
