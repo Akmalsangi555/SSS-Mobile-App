@@ -15,13 +15,11 @@ class NotificationView extends StatefulWidget {
 }
 
 class _NotificationViewState extends State<NotificationView> {
-  // Initialize controller only once
   final NotificationController _controller = Get.put(NotificationController());
 
   @override
   void initState() {
     super.initState();
-    // Fetch notifications when screen is first created
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_controller.notifications.isEmpty && !_controller.isLoading.value) {
         _controller.fetchNotifications();
@@ -45,11 +43,14 @@ class _NotificationViewState extends State<NotificationView> {
       child: Obx(() {
         // Show loading
         if (_controller.isLoading.value && _controller.notifications.isEmpty) {
-          return Center(child: CircularProgressIndicator(color: AppTheme.backgroundColor));
+          return Center(
+              child:
+                  CircularProgressIndicator(color: AppTheme.backgroundColor));
         }
 
         // Show error
-        if (_controller.errorMessage.isNotEmpty && _controller.notifications.isEmpty) {
+        if (_controller.errorMessage.isNotEmpty &&
+            _controller.notifications.isEmpty) {
           return Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -187,7 +188,15 @@ class _NotificationViewState extends State<NotificationView> {
       final day = dateTime.day.toString().padLeft(2, '0');
       final month = dateTime.month.toString().padLeft(2, '0');
       final year = dateTime.year;
-      final weekday = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][dateTime.weekday - 1];
+      final weekday = [
+        'Mon',
+        'Tue',
+        'Wed',
+        'Thu',
+        'Fri',
+        'Sat',
+        'Sun'
+      ][dateTime.weekday - 1];
       final hour = dateTime.hour % 12 == 0 ? 12 : dateTime.hour % 12;
       final minute = dateTime.minute.toString().padLeft(2, '0');
       final period = dateTime.hour < 12 ? 'AM' : 'PM';
@@ -198,78 +207,3 @@ class _NotificationViewState extends State<NotificationView> {
     }
   }
 }
-
-// class NotificationView extends StatelessWidget {
-//   const NotificationView({super.key});
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     List<Map<String, dynamic>> notifications = [
-//       {
-//         'title': 'Supervisor',
-//         'notification':
-//             'Reminder: Please check in on time for your scheduled shift today. Punctuality is important for smooth operations.',
-//         'date': '09/09/2025 Wed 05:03AM',
-//       },
-//       {
-//         'title': 'Client Manager',
-//         'notification':
-//             'Reminder: Please check in on time for your scheduled shift today. Punctuality is important for smooth operations.',
-//         'date': '09/09/2025 Wed 05:03AM',
-//       },
-//       {
-//         'title': 'Dispatch  Manager',
-//         'notification':
-//             'Reminder: Please check in on time for your scheduled shift today. Punctuality is important for smooth operations.',
-//         'date': '09/09/2025 Wed 05:03AM',
-//       },
-//     ];
-//     return SScaffold(
-//         appBar: ssAppBar('Notifications', context),
-//         child: SingleChildScrollView(
-//           child: Padding(
-//             padding: const EdgeInsets.all(20),
-//             child: Column(
-//               children: notifications.map((e) {
-//                 return Column(
-//                   children: [
-//                     Container(
-//                       padding: EdgeInsets.all(16),
-//                       decoration: BoxDecoration(
-//                         borderRadius: BorderRadius.circular(16),
-//                         color: AppTheme.notificationBackgroundColor,
-//                       ),
-//                       child: Column(
-//                         crossAxisAlignment: CrossAxisAlignment.start,
-//                         children: [
-//                           Text(e['title'],
-//                               style: TextStyle(
-//                                   color: AppTheme.backgroundColor,
-//                                   fontSize: 15,
-//                                   fontWeight: FontWeight.bold)),
-//                           Text(e['notification'],
-//                               style:
-//                                   TextStyle(color: AppTheme.primaryTextColor))
-//                         ],
-//                       ),
-//                     ),
-//                     SizedBox(
-//                       height: 4,
-//                     ),
-//                     Row(
-//                       mainAxisAlignment: MainAxisAlignment.end,
-//                       children: [
-//                         Text('  ${e['date']}',
-//                             style: TextStyle(
-//                                 color: AppTheme.primaryTextColor, fontSize: 12))
-//                       ],
-//                     ),
-//                     SizedBox(height: 16)
-//                   ],
-//                 );
-//               }).toList(),
-//             ),
-//           ),
-//         ));
-//   }
-// }

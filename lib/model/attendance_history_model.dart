@@ -1,6 +1,3 @@
-// To parse this JSON data, do
-//
-//     final attendanceHistoryModel = attendanceHistoryModelFromJson(jsonString);
 
 import 'dart:convert';
 
